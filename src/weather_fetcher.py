@@ -10,10 +10,12 @@ class WeatherFetcher:
 
     async def gather_data(self) -> None:
         while True:
-            weather_data = await self._make_api_call()
+            try:
+                weather_data = await self._make_api_call()
+            except httpx.HTTPError:
+                continue
             parsed_data = await self._parse_data(weather_data)
             await self.queue.put(parsed_data)
-
             await asyncio.sleep(10)
 
     @staticmethod
